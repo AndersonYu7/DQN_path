@@ -17,10 +17,11 @@ def conv2d(x, W):
 	return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
 imageSize = [25,25,3]
-batchSize = 50
-games = 200
+batchSize = 10
+games = 50
 limit = imageSize[0]*imageSize[1]
-totalImages = games*imageSize[0]*imageSize[1]
+black_area_width   = int(imageSize[0]-720/(1280/imageSize[0]))*imageSize[0]
+totalImages = games * (imageSize[0] * imageSize[1] - black_area_width)
 
 #gamesArr = np.arange(totalImages)
 
@@ -32,8 +33,9 @@ def randomiseGames() :
 def getInput(index) :
 	global gamesArr
 	global imageSize
-	temp = imageSize[0]*imageSize[1]
-	img = cv2.imread('trainImages/image_'+str(int(index/temp))+'_'+str(index%temp)+'.png')
+	
+	temp = imageSize[0]*imageSize[1] - black_area_width
+	img = cv2.imread('Images_yun_test/image_'+str(int(index/temp))+'_'+str(index%temp)+'.png')
 	return img
 def getRightOutput(index,points,target) :
 	global gamesArr
@@ -110,7 +112,7 @@ while count<steps :
 
 	print('count is %d'%count)
 	gamesArr = []
-	points = np.genfromtxt('pointsNew.txt')
+	points = np.genfromtxt('pointsNew_yun.txt')
 	target = np.genfromtxt('Targets200_New.txt')
 
 	for i in range(totalImages) :

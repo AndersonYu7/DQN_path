@@ -5,9 +5,9 @@ import CheckingConnectivity
 import os
 import shutil
 
-numberOfBlocks = 75
+numberOfBlocks = 25
 gridSize = [25,25,3]
-totalGames = 200
+totalGames = 50
 #points = np.zeros([totalGames,gridSize[0]*gridSize[1]])
 points = []
 def assignBlocks(grid,xlimit,limit,numberOfBlocks,flag) :
@@ -17,8 +17,9 @@ def assignBlocks(grid,xlimit,limit,numberOfBlocks,flag) :
 		grid[int(x1[i]/xlimit)][x1[i]%xlimit][0] = 0
 		grid[int(x1[i]/xlimit)][x1[i]%xlimit][1] = 0
 		grid[int(x1[i]/xlimit)][x1[i]%xlimit][2] = 0	
+	print(CheckingConnectivity.Checking(grid[:,:,0]))
 	while not CheckingConnectivity.Checking(grid[:,:,0]) :
-		#print 'not Valid Connection'
+		print('not Valid Connection')
 		for i in range(numberOfBlocks) :
 			grid[int(x1[i]/xlimit)][x1[i]%xlimit][0] = 255
 			grid[int(x1[i]/xlimit)][x1[i]%xlimit][1] = 255
