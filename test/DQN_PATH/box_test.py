@@ -14,7 +14,7 @@ real_pic_height = 720
 black_area_width   = (height-real_pic_height/(real_pic_width/height))/2
 black_area  = int(int((height-720/(1280/height)))*height/2)
 gridSize = [width,height,3]
-totalGames = 1
+totalGames = 20
 start_pos_x = int(black_area_width-1)
 end_pos_x = int(width-black_area_width)
 #points = np.zeros([totalGames,gridSize[0]*gridSize[1]])
@@ -66,15 +66,45 @@ def generate_block(blocks, numberOfBlocks, xlimit, limit):
             box+=(-5+25)
         box-=(-5+25)        
         total-=1
-        print(total)
         if(total%3 != 0):
-            print(box)
             box-=22
-            print('!', box)
         else:
             box+=54
-            print('?', box)
 
+import random
+
+def generate_random_blocks():
+    blocks = []
+    
+    # 設定方塊數量上限為9
+    numberOfBlocks = 9
+    box = []
+    boxes = []
+    while numberOfBlocks:
+        h = random.randint(1, 5)
+        w = random.randint(1, 3)
+        
+        box_end = end_pos_x*height - (h-1)*height
+        box_id = random.randint(start_pos_x*height, box_end)
+        while(box_id in boxes):
+            h = random.randint(1, 3)
+            w = random.randint(1, 3)
+            box_end = end_pos_x*height - (h-1)*height
+            box_id = random.randint(start_pos_x*height, box_end)
+            boxes = []
+            box=[]
+            numberOfBlocks+=1
+        for i in range(h):
+            for j in range(w):
+                blocks.append(box_id)
+                box.append(box_id)
+                box_id+=1
+            box_id+=(-w+height)
+        boxes.append(box)
+        box = []
+        numberOfBlocks -= 1
+
+    return blocks
 
 
 
@@ -86,7 +116,8 @@ def generate_block(blocks, numberOfBlocks, xlimit, limit):
 
 def assignBlocks(grid,xlimit,limit,numberOfBlocks,flag) :
     blocks = []
-    generate_block(blocks, numberOfBlocks, xlimit, limit)
+    # generate_block(blocks, numberOfBlocks, xlimit, limit)
+    blocks = generate_random_blocks()
     for pos in blocks:
         # flag[pos] = 1
         x, y = divmod(pos, xlimit)
@@ -95,14 +126,15 @@ def assignBlocks(grid,xlimit,limit,numberOfBlocks,flag) :
 
     # cv2.imshow('a', grid)
     # cv2.waitKey(0)
-    # while not CheckingConnectivity.Checking(grid[:,:,0]) :
-    #     blocks = []
-    #     generate_block(blocks, numberOfBlocks, xlimit, limit)
-    #     for pos in blocks:
-    #         # flag[pos] = 1
-    #         x, y = divmod(pos, xlimit)
-    #         for i in range(3):
-    #             grid[x][y][i] = 0 
+    while not CheckingConnectivity.Checking(grid[:,:,0]) :
+        blocks = []
+        # generate_block(blocks, numberOfBlocks, xlimit, limit)
+        blocks = generate_random_blocks()
+        for pos in blocks:
+            # flag[pos] = 1
+            x, y = divmod(pos, xlimit)
+            for i in range(3):
+                grid[x][y][i] = 0 
 
     for pos in blocks:
         flag[pos] = 1
