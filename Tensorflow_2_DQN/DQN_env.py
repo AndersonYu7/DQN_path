@@ -14,7 +14,8 @@ RIGHT = 3
 HIT_OBSTACLE = -100
 FINISH = 100
 OUTOFRANGE = -100
-APPROACH = 50
+REVISIT_PENALTY = -20
+NEW_PATH_REWARD = 2
 
 #Env
 OBSTACLE = -1
@@ -30,6 +31,8 @@ class GridWorldEnvironment():
         self.start = self._generate_random_position()
         self.goal = self._generate_random_position()
 
+
+        self.visited_positions = []
         self._distance_to_goal = np.abs(self.start[0] - self.goal[0]) + np.abs(self.start[1] - self.goal[1])
 
         # Generate random obstacle coordinates
@@ -51,6 +54,8 @@ class GridWorldEnvironment():
     def reset(self):
         self.start = self._generate_random_position()
         self.goal = self._generate_random_position()
+
+        self.visited_positions = []
 
         # Generate random obstacle coordinates
         self.obstacles = set()
@@ -117,12 +122,18 @@ class GridWorldEnvironment():
             self._episode_ended = True
             return self.current_observation(), FINISH, True
         else:
+            
             distance_togoal = np.sqrt((new_position[0] - self.goal[0])**2 + (new_position[1] - self.goal[1])**2)
+            reward = 0
 
-            if distance_togoal < self._distance_to_goal:
-                reward = distance_togoal
+            if distance_togoal < int(self._distance_to_goal/2):
+                reward = (self.grid_size - distance_togoal)*2+5
+            elif tuple(new_position) in self.visited_positions:
+                # 如果新位置已经被访问过，扣分
+                reward += REVISIT_PENALTY
             else:
-                reward = 0
+                # 如果新位置是新的，将其添加到visited_positions列表中
+                self.visited_positions.append(tuple(new_position))
 
             self.current_position = new_position
             self._distance_to_goal = distance_togoal

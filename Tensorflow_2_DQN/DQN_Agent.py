@@ -9,6 +9,8 @@ from DQN_env import GridWorldEnvironment
 
 import random
 
+tf.keras.utils.disable_interactive_logging()
+
 # # 自定義的GridWorldEnvironment
 # class GridWorldEnvironment:
 #     # ... (您的GridWorldEnvironment的定义，与之前一样)
@@ -74,6 +76,7 @@ class DQNAgent:
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
+        loss = 0
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
@@ -83,8 +86,10 @@ class DQNAgent:
 
             history = self.model.fit(np.reshape(state, (1, *self._state_size)), np.reshape(target_f, (1, 4)), epochs=1, verbose=0)
 
-            loss = history.history['loss'][0]
-            self._losses.append(loss)
+            loss += history.history['loss'][0]
+
+        loss/=len(minibatch)
+        self._losses.append(loss)
             
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay

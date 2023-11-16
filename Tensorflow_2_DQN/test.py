@@ -7,7 +7,7 @@ from DQN_env import GridWorldEnvironment
 
 
 def test_model(model_path, num_episodes=100):
-    env = GridWorldEnvironment(grid_size = 5, num_obstacles = 5)
+    env = GridWorldEnvironment(grid_size = 10, num_obstacles = 10)
     model = load_model(model_path)
     
     for episode in range(num_episodes):
